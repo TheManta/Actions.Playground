@@ -1,0 +1,15 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+      - name: Build .NET Solution
+        run: dotnet build
