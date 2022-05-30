@@ -18,7 +18,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{CE1EDC6F-26FD-47EC-B502-85BE73FA3242}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\test-report.yml = .github\workflows\test-report.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFramework48App.Tests", "NetFramework48App.Tests\NetFramework48App.Tests.csproj", "{BD05C65F-61CC-4765-8FF1-0CE2EA8FC9A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +33,10 @@ Global
 		{57D2FD67-00AC-4EE1-8ABD-E70AFD01B53C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57D2FD67-00AC-4EE1-8ABD-E70AFD01B53C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57D2FD67-00AC-4EE1-8ABD-E70AFD01B53C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD05C65F-61CC-4765-8FF1-0CE2EA8FC9A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD05C65F-61CC-4765-8FF1-0CE2EA8FC9A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD05C65F-61CC-4765-8FF1-0CE2EA8FC9A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD05C65F-61CC-4765-8FF1-0CE2EA8FC9A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
