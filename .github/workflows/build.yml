@@ -8,6 +8,8 @@ jobs:
   build:
     name: Build .NET
     runs-on: windows-2022
+    env:
+      PROJECT_FOLDER: NetFramework48App
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -26,8 +28,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
 
+      - name: Parse Version from Tag
+        uses: ncipollo/semantic-version-action@v1
+        id: version
+
       - name: Build .NET
-        run: dotnet build
+        run: dotnet build --configuration Release -p:version=${{ steps.version.outputs.tag }}
 
       - name: Run Tests
         run: dotnet test
@@ -39,10 +45,39 @@ jobs:
           name: test-results
           path: "./**/*.trx"
 
-      - name: VirusTotal Scan
+      - name: Scan with VirusTotal
         uses: crazy-max/ghaction-virustotal@v3
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
           files: | # Adjust project folders
-            NetFramework48App/bin/**/*.exe
-            NetFramework48App/bin/**/*.dll
+            $PROJECT_FOLDER/bin/**/*.exe
+            $PROJECT_FOLDER/bin/**/*.dll
+
+      - name: Create VERSION.md
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.tag }}
+        shell: powershell
+        run: |
+          echo "source: ${Env:GITHUB_REPOSITORY}" > "${Env:GITHUB_WORKSPACE}\VERSION.md"
+          echo "version: ${Env:BUILD_VERSION}" >> "${Env:GITHUB_WORKSPACE}\VERSION.md"
+          echo "commit: ${Env:GITHUB_SHA}" >> "${Env:GITHUB_WORKSPACE}\VERSION.md"
+          echo "date: $((Get-Date -format r).ToString())" >> "${Env:GITHUB_WORKSPACE}\VERSION.md"
+
+      - name: Package Artifacts
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.tag }}
+        shell: powershell
+        run: |
+          Tree /F ".\${Env:PROJECT_FOLDER}\bin" | Write-Output
+          $COMMIT_HASH = $Env:GITHUB_SHA.Substring(0, 7)
+          7z a ${Env:PROJECT_FOLDER}-${Env:BUILD_VERSION}-${COMMIT_HASH}.zip .\${Env:PROJECT_FOLDER}\bin\x64\Release\* -xr!'*.pdb' -xr!'*.tmp' -mx=7
+
+      - name: Publish on GitHub Releases
+        # Run only when tagged like "v*"
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          files: |
+            $PROJECT_FOLDER-*.zip
