@@ -1,6 +1,3 @@
-# Pull Requests require separate test reporting due to read-write access limitations
-# https://github.com/marketplace/actions/test-reporter#recommended-setup-for-public-repositories
-# https://blog.gitguardian.com/github-actions-security-cheat-sheet/
 name: Test Report
 on:
   workflow_run:
