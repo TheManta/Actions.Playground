@@ -1,3 +1,4 @@
+---
 name: Build
 on:
   push:
@@ -10,22 +11,38 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper list
+          # of changed files within `super-linter`
+          fetch-depth: 0
+
+      - name: Lint Code
+        uses: github/super-linter@v4
+        continue-on-error: true
+        env:
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
+
       - name: Build .NET
         run: dotnet build
+
       - name: Run Tests
         run: dotnet test
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: test-results
           path: "./**/*.trx"
+
       - name: VirusTotal Scan
         uses: crazy-max/ghaction-virustotal@v3
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
-          files: | # Adjust here
+          files: | # Adjust project folders
             NetFramework48App/bin/**/*.exe
             NetFramework48App/bin/**/*.dll
